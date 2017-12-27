@@ -1,0 +1,37 @@
+<launch>
+<!-- Run NAP on bag files which contains the odometry in addition to imu, gray image and color image-->
+
+
+<!-- Input Topics -->
+  <arg name="bag_odometry_topic" default="/vins_estimator/odometry"/>
+
+  <!--<arg name="colocation_topic" default="/colocation_dbow"/>-->
+  <arg name="colocation_topic" default="/colocation"/>
+
+  <!--<arg name="color_image_topic" default="/djiros/image"/>-->
+  <arg name="color_image_topic" default="/mv_29900616/image_raw"/>
+
+
+<!-- BAG -->
+  <arg name="bag_base" default="/media/mpkuse/Bulk_Data/other_seqs/tony_bags/"/>
+  <!--<arg name="bag_name" default="00.bag"/>-->
+  <!--<arg name="bag_name" default="corridor_02_cooked.bag"/> -->
+  <arg name="bag_name" default="00_cooked.bag"/>
+  <node name="rosbag" pkg="rosbag" type="play" args="-r 1 -d 10 $(arg bag_base)/$(arg bag_name)" output="log" />
+
+
+<!-- NAP - Place Recognition Module -->
+<node name="nap" pkg="nap" type="nap_time_node.py" output="log" >
+  <remap to="$(arg color_image_topic)" from="/semi_keyframes"/>
+</node>
+
+
+<!-- Colocation viz -->
+<node name="colocation_viz" pkg="nap" type="colocation_viz.py" output="screen" > <!-- subscribes to /vins_estimator/odometry -->
+  <remap to="$(arg bag_odometry_topic)" from="/vins_estimator/odometry"/>
+  <remap to="$(arg colocation_topic)" from="/colocation" />
+</node>
+
+<node name="rvizvisualisation" pkg="rviz" type="rviz" output="log" args="-d $(find nap)/rviz/euroc.rviz" />
+
+</launch>

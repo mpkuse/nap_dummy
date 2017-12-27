@@ -1,0 +1,29 @@
+<launch>
+
+  <!-- BlueFox Color -->
+  <!--<arg name="device" default="25001498" />--> <!-- Gray -->
+  <arg name="device" default="29900616" /> <!-- Color -->
+  <node pkg="bluefox2" type="bluefox2_single_node" name="mv_$(arg device)" output="screen">
+      <param name="identifier" type="string" value="$(arg device)"/>
+      <param name="frame_id" type="string" value="mv_$(arg device)"/>
+      <param name="camera_name" type="string" value="mv_$(arg device)"/>
+      <!-- todo : change the calibration file, not used in qintong's code -->
+      <param name="calib_url" type="string" value="file://${ROS_HOME}/camera_info/$(arg device).yaml"/>
+      <param name="fps" type="double" value="30"/>
+      <param name="idpf" type="int" value="0"/>
+      <param name="aec" type="bool" value="true"/>
+      <param name="expose_us" type="int" value="10000"/>
+      <param name="agc" type="bool" value="true"/>
+      <param name="gain_db" type="double" value="0.0"/>
+      <param name="cbm" type="int" value="0"/>
+      <param name="ctm" type="int" value="1"/>
+      <param name="dcfm" type="int" value="0"/>
+      <param name="hdr" type="bool" value="false"/>
+      <param name="wbp" type="int" value="-1"/>
+      <param name="request" type="int" value="0"/>
+      <param name="mm" type="int" value="0"/>
+      <param name="image_raw/compressed/jpeg_quality" type="int" value="80"/>
+  </node>
+
+
+</launch>

@@ -1,0 +1,166 @@
+<launch>
+
+<!-- ##################
+     #### Live Run ####
+     ################## -->
+     <!-- NOTE
+        Chk USBFS memory (default is 16, not suitable for point grey cam):
+          $cat /sys/module/usbcore/parameters/usbfs_memory_mb
+
+        Set USBFS memory
+          $sudo sh -c 'echo 1024 > /sys/module/usbcore/parameters/usbfs_memory_mb'
+
+        run point grey cam
+          $roslaunch pointgrey_camera_driver camera.launch
+
+
+     -->
+
+<!--  #################
+      ###### BAGS #####
+      ################# -->
+
+    <!-- BAG SET 01, captured 29th June, 2017 -->
+    <!-- <arg name="bag_path" default="/media/mpkuse/Bulk_Data/other_seqs/pointgrey_color_seq/" /> -->
+    <!-- <arg name="bag_file" default="2017-06-29-15-09-10.bag" doc="OK, on stairs for quick testing"/> -->
+    <!-- <arg name="bag_file" default="2017-06-29-15-11-31.bag"/> -->
+    <!-- <arg name="bag_file" default="2017-06-29-15-16-50.bag" doc="start from UG flr of cyt to lawn and back. not a good seq to test with"/> -->
+    <!-- <arg name="bag_file" default="2017-06-29-15-23-43.bag" doc="ok"/> -->
+    <!--<arg name="bag_file" default="2017-06-29-15-29-46.bag" doc="traj ok, but not ok to test netvlad"/>-->
+    <!-- <arg name="bag_file" default="2017-06-29-15-31-19.bag" doc="dont use"/> -->
+    <!-- END OF BAG 01 -->
+
+    <!-- Bag set 02, captured 5th July, 2017 -->
+    <!-- <arg name="bag_path" default="/media/mpkuse/Bulk_Data/other_seqs/pointgrey_color_seq/bags02/" /> -->
+    <!--<arg name="bag_file" default="2017-07-04-16-28-55.bag" doc="in lift"/>-->
+    <!-- <arg name="bag_file" default="2017-07-04-16-32-46.bag" /> -->
+    <!-- <arg name="bag_file" default="2017-07-04-16-36-37.bag" doc="bad for testing" /> -->
+    <!-- <arg name="bag_file" default="2017-07-04-16-39-32.bag" /> -->
+    <!-- <arg name="bag_file" default="2017-07-04-16-41-25.bag" /> -->
+    <!-- <arg name="bag_file" default="2017-07-04-16-43-59.bag" /> -->
+    <!-- <arg name="bag_file" default="2017-07-04-16-51-41.bag" /> -->
+    <!--<arg name="bag_file" default="2017-07-04-17-06-23.bag" />-->
+    <!-- END OF BAG 02 -->
+
+
+    <!-- Bag set 03, Captured on 16th Aug, 2017 -->
+    <!-- <arg name="bag_path" default="/media/mpkuse/Bulk_Data/other_seqs/pointgrey_color_seq/bag03/" /> -->
+    <!-- <arg name="bag_file" default="2017-08-16-14-50-54.bag" doc="on stairs, bad for depth initialization, best dont use"/> -->
+    <!-- <arg name="bag_file" default="2017-08-16-14-54-01.bag" doc="start UG outside CYT, takes stairs down to enterprise center walk back" /> -->
+    <!-- <arg name="bag_file" default="2017-08-16-15-00-56.bag" doc="start from SENG towards BASE. Good results!"/> -->
+    <!-- <arg name="bag_file" default="2017-08-16-15-06-12.bag" doc="Walking in BASE. Alright! but a little short the seq. 1 wrong"/> -->
+    <!-- <arg name="bag_file" default="2017-08-16-15-09-15.bag" doc="!!Perfect seq for testing" /> -->
+
+
+    <!-- Bag set 05, 4 seq in Tai Po Tsai. Captured on 12th Dec, cloudy weather -->
+    <arg name="bag_path" default="/media/mpkuse/Bulk_Data/other_seqs/pointgrey_color_seq/bag05" />
+    <arg name="bag_file" default="2017-12-12-10-46-42.bag" />
+    <!-- <arg name="bag_file" default="2017-12-12-10-51-52.bag" /> -->
+    <!-- <arg name="bag_file" default="2017-12-12-10-53-04.bag" doc="building near the garbage dump in tpt" /> -->
+    <!-- <arg name="bag_file" default="2017-12-12-11-04-45.bag" doc="!!tpt childrens garden, Another nice seq to test" /> -->
+    <!-- <arg name="bag_file" default="2017-12-13-11-12-35.bag" doc="!!indoors of LSK building G/F. Usable" /> -->
+
+
+
+    <node pkg="rosbag" type="play" name="rosbag" args="-d 10  $(arg bag_path)/$(arg bag_file)" output="log"/>
+    <!--<node name="recorder" pkg="rosbag" type="record" args="-O $(arg bag_path)/cooked_$(arg bag_file) /camera/image_raw /imu/imu /vins_estimator/odometry"/>-->
+    <!--<node name="recorder" pkg="rosbag" type="record" args="-O $(arg bag_path)/all_cooked_$(arg bag_file) -a "/>-->
+
+<!-- ##### END BAGS #### -->
+
+
+
+<!-- ##################
+     ###### VINS ######
+     ################## -->
+    <arg name="config_path" default = "$(find feature_tracker)/../config/point_gray/point_gray_config.yaml" />
+    <arg name="vins_path" default = "$(find feature_tracker)/../config/../" />
+
+    <node name="feature_tracker" pkg="feature_tracker" type="feature_tracker" output="log">
+        <param name="config_file" type="string" value="$(arg config_path)" />
+        <param name="vins_folder" type="string" value="$(arg vins_path)" />
+    </node>
+
+    <node name="vins_estimator" pkg="vins_estimator" type="vins_estimator" output="log">
+       <param name="config_file" type="string" value="$(arg config_path)" />
+       <param name="vins_folder" type="string" value="$(arg vins_path)" />
+    </node>
+
+    <node name="pose_graph" pkg="pose_graph" type="pose_graph" output="log">
+      <param name="config_file" type="string" value="$(arg config_path)" />
+      <param name="visualization_shift_x" type="int" value="0" />
+      <param name="visualization_shift_y" type="int" value="0" />
+      <param name="skip_cnt" type="int" value="0" />
+    </node>
+
+<!-- ##### END VINS ##### -->
+
+
+
+
+<!--  #############################
+      ##### Place Recognition #####
+      ############################# -->
+      <arg name="bag_color_im_topic" default="/vins_estimator/keyframe_image" /> <!-- Key frames only -->
+      <!--<arg name="bag_color_im_topic" default="/camera/image_raw" />--><!-- All input color images -->
+
+      <!--NAP Node -->
+      <!-- <node name="nap" pkg="nap" type="nap_graph_modelling.py" output="screen" > -->
+      <node name="nap" pkg="nap" type="nap_daisy_bf.py" output="screen" >
+        <remap to="$(arg bag_color_im_topic)" from="/semi_keyframes"/>
+      </node>
+
+
+      <!-- DBOW node -->
+       <!-- <node name="dbow_node" pkg="nap" type="dbow3_naive" output="screen">
+        <remap to="$(arg bag_color_im_topic)" from="/color_image_inp" />
+        <remap from="/colocation_dbow" to="/colocation" />
+      </node> -->
+
+      <!-- DBOW node by Qin Tong -->
+      <!-- TODO: In tony's node add code to writes images to file and also writeout all loop_candidates. But essentially this is same as my DBOW node, difference is in the way comparison thresh is set -->
+      <!-- <node name="dbow_qintony_node" pkg="loop_detector" type="loop_detector" output="screen"> -->
+        <!-- <remap from="/raw_graph_edge" to="/colocation" /> -->
+    <!-- </node> -->
+
+
+
+<!-- ##### END Place Recognition ##### -->
+
+
+
+<!-- ##########################################################
+     ##### Geometry Node / Custom Pose Graph Optimization #####
+     ##########################################################
+            subscribes to `vins/camera_pose`, `3d_point_cloud`, `napMsg`  -->
+    <node name="pgraph_opt" pkg="nap" type="pose_graph_opt_node" output="log">
+        <param name="config_file" type="string" value="$(arg config_path)" />
+        <!-- Commentout next line to remove the places-feedback-->
+        <!-- <remap from="/colocation_chatter" to="/colocation" /> -->
+    </node>
+
+<!-- ##### END Pose Graph Optimization ##### -->
+
+
+
+<!--  #########################
+      ##### Visualization #####
+      ######################### -->
+
+    <!-- Qin Tong's Visualization -->
+    <!--<node name="rvizvisualisation" pkg="rviz" type="rviz" output="log" args="-d $(find vins_estimator)/../config/vins_rviz_config.rviz" />-->
+
+
+    <!-- <node name="rvizvisualisation" pkg="rviz" type="rviz" output="log" args="-d $(find nap)/rviz/my_pose_graph.rviz" /> -->
+
+    <!-- Display/Publish the colocation image. Subscribes to /raw_graph_visual_edge -->
+    <!-- <node name="colocation_viz_lite" pkg="nap" type="colocation_viz_lite.py" output="log" /> -->
+
+
+<!-- ##### End Visualization ##### -->
+
+
+
+
+
+</launch>

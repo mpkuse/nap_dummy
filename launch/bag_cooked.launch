@@ -1,0 +1,55 @@
+<launch>
+<!--
+DBOW_naive node subscribes to color images and publishes colocation msg (NapMsg).
+These along with odometry are subscribed by colocation_viz.py script to publish the lines-marker.
+This can be visualized with rviz
+-->
+
+<!-- Input topics -->
+<!--<arg name="bag_color_im_topic" default="/mv_29900616/image_raw" />-->
+<arg name="bag_color_im_topic" default="/dji_sdk/image_raw_resized" />
+<arg name="bag_odometry_topic" default="/vins_estimator/odometry"/>
+<arg name="colocation_topic" default="/colocation_dbow"/>
+
+
+
+<!-- BAG -->
+<arg name="bag_base" default="/media/mpkuse/Bulk_Data/other_seqs/tony_bags/"/>
+<arg name="bag_name" default="dji_00_cooked.bag"/>
+<node name="rosbag" pkg="rosbag" type="play" args="-r 1  -d 10 $(arg bag_base)/$(arg bag_name)" output="log" />
+
+
+<!-- Nap Node -->
+<!--<node name="nap" pkg="nap" type="nap_geom_node.py" output="screen" >-->
+
+<node name="nap" pkg="nap" type="nap_graph_modelling.py" output="screen" >
+  <remap to="$(arg bag_color_im_topic)" from="/semi_keyframes"/>
+</node>
+
+
+
+<!-- DBOW node -->
+<!--
+<node name="dbow_node" pkg="nap" type="dbow3_naive" output="screen">
+  <remap to="$(arg bag_color_im_topic)" from="/color_image_inp" />
+</node>
+-->
+
+<!-- Colocation viz -->
+<!-- this node also subscribes to raw node msg (ie./colocation_viz/raw/node, /colocation_viz/raw/edge) -->
+<node name="colocation_viz2" pkg="nap" type="colocation_viz2.py" output="log" > <!-- subscribes to /vins_estimator/odometry -->
+  <remap to="$(arg bag_odometry_topic)" from="/vins_estimator/odometry"/>
+  <remap to="$(arg colocation_topic)" from="/colocation" />
+</node>
+
+<!-- Write Odometry to file(debug) -->
+<!--
+<node name="odometry2file" pkg="nap" type="odometry2file.py" output="screen">
+  <remap from="/vins_estimator/odometry" to="$(arg bag_odometry_topic)" />
+</node>
+-->
+
+<!-- RVIZ -->
+<node name="rvizvisualisation" pkg="rviz" type="rviz" output="log" args="-d $(find nap)/rviz/viz_gps.rviz" />
+
+</launch>

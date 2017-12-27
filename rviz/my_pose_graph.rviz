@@ -7,15 +7,12 @@ Panels:
         - /Status1
         - /Ref1/GridXZ1
         - /Ref1/Grid1
-        - /Pose Graph1/Namespaces1
-        - /Paths1
         - /Paths1/Path1
         - /Paths1/No Loop1
-        - /Image1
-        - /Original Pose Graph1/Namespaces1
-        - /DBOW Colocation1
+        - /MarkerArray3
+        - /MarkerArray3/Namespaces1
         - /DBOW Colocation1/Status1
-      Splitter Ratio: 0.508720934
+      Splitter Ratio: 0.622093022
     Tree Height: 745
   - Class: rviz/Selection
     Name: Selection
@@ -86,17 +83,6 @@ Visualization Manager:
           Value: true
       Enabled: true
       Name: Ref
-    - Class: rviz/Marker
-      Enabled: true
-      Marker Topic: /mish/pose_nodes
-      Name: Pose Graph
-      Namespaces:
-        loop_edges: true
-        odom_edges: true
-        spheres: true
-        text_label: false
-      Queue Size: 100
-      Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -155,7 +141,7 @@ Visualization Manager:
           Buffer Length: 1
           Class: rviz/Path
           Color: 255; 85; 255
-          Enabled: false
+          Enabled: true
           Head Diameter: 0.300000012
           Head Length: 0.200000003
           Length: 0.300000012
@@ -172,7 +158,7 @@ Visualization Manager:
           Shaft Length: 0.100000001
           Topic: /vins_estimator/path
           Unreliable: false
-          Value: false
+          Value: true
       Enabled: true
       Name: Paths
     - Class: rviz/Image
@@ -195,15 +181,6 @@ Visualization Manager:
         {}
       Queue Size: 100
       Value: true
-    - Class: rviz/Marker
-      Enabled: true
-      Marker Topic: /mish/pose_nodes_original
-      Name: Original Pose Graph
-      Namespaces:
-        spheres: true
-        text_label: true
-      Queue Size: 100
-      Value: true
     - Class: rviz/MarkerArray
       Enabled: true
       Marker Topic: /pose_graph/camera_pose_visual
@@ -217,7 +194,7 @@ Visualization Manager:
       Marker Topic: /pose_graph/pose_graph
       Name: MarkerArray
       Namespaces:
-        CameraPoseVisualization: true
+        loop_edges_basic: true
       Queue Size: 100
       Value: true
     - Class: rviz/Image
@@ -256,6 +233,30 @@ Visualization Manager:
       Transport Hint: raw
       Unreliable: false
       Value: true
+    - Class: rviz/Group
+      Displays:
+        - Class: rviz/Marker
+          Enabled: true
+          Marker Topic: /mish/pose_nodes
+          Name: Pose Graph Edges
+          Namespaces:
+            loop_edges_basic: true
+            odom_edges: true
+            spheres: true
+            text_label: false
+          Queue Size: 100
+          Value: true
+        - Class: rviz/Marker
+          Enabled: true
+          Marker Topic: /mish/pose_nodes_original
+          Name: Pose Graph
+          Namespaces:
+            spheres: true
+            text_label: true
+          Queue Size: 100
+          Value: true
+      Enabled: true
+      Name: mpkuse pose graph viz
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -280,24 +281,24 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 171.857483
+      Distance: 27.571846
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -16.4223881
-        Y: -7.25989437
-        Z: -3.24844405e-05
+        X: -32.5272217
+        Y: 12.575655
+        Z: -0.000239989051
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 1.50479639
+      Pitch: 1.18479478
       Target Frame: <Fixed Frame>
       Value: XYOrbit (rviz)
-      Yaw: 4.41199303
+      Yaw: 4.640131
     Saved: ~
 Window Geometry:
   Cluster Assgn:

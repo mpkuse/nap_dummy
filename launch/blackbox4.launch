@@ -28,9 +28,9 @@
             size_y:    1024
             center_x:  640
             center_y:  512
-            cropper_x: 752
-            cropper_y: 480
-            down_sample_scale: 1.0
+            cropper_x: 1280
+            cropper_y: 1024
+            down_sample_scale: .5
         </rosparam>
     </node>
 
@@ -54,11 +54,18 @@
 </node>
 
 
-<!-- Start VINS-testbed -->
-<arg name="config_path" default = "$(find feature_tracker)/../config/point_gray/point_gray_config.yaml" />
+<!-- Start VINS-testbed
+  Note: This involves 4 nodes
+  a) feature tracker   : Tracks features
+  b) vins_estimator    : IMU+Camera fusion + Marginalization
+  c) pose_graph        : Pose Graph Optimization engines. (This is run every 5 sec)
+  d) place_recognition : Place recognition. Can use either NAP or DBOW. (currently disabled)
+-->
+
+<arg name="config_path" default = "$(find feature_tracker)/../config/black_box4/blackbox4.yaml" />
 <arg name="vins_path" default = "$(find feature_tracker)/../config/../" />
 
-<node name="feature_tracker" pkg="feature_tracker" type="feature_tracker" output="log">
+<node name="feature_tracker" pkg="feature_tracker" type="feature_tracker" output="screen">
     <param name="config_file" type="string" value="$(arg config_path)" />
     <param name="vins_folder" type="string" value="$(arg vins_path)" />
 </node>
@@ -74,5 +81,10 @@
   <param name="visualization_shift_y" type="int" value="0" />
   <param name="skip_cnt" type="int" value="0" />
 </node>
+
+
+
+<!-- Viz -->
+
 
 </launch>

@@ -21,25 +21,22 @@
         <param name="WB_Blue" type="int" value="810"/>
         <param name="gain" type="double" value="5.0"/>
         <rosparam>
-            is_sync:   false
-            is_grey:   false
-            is_roi:    true
-            size_x:    1280
-            size_y:    1024
-            center_x:  640
-            center_y:  512
-            cropper_x: 752
-            cropper_y: 480
-            down_sample_scale: 1.0
+          is_sync:   false
+          is_grey:   false
+          is_roi:    true
+          size_x:    1280
+          size_y:    1024
+          center_x:  640
+          center_y:  512
+          cropper_x: 1280
+          cropper_y: 1024
+          down_sample_scale: .5
         </rosparam>
     </node>
 
 
   <!-- ROS Camera Calib -->
-  <node name="cameracalibrator" pkg="camera_calibration" type="cameracalibrator.py" output="screen" args="image:=pg_$(arg device)/image_raw">
-    <param name="size" value="8x6"/>
-    <param name="square" value="0.108"/>
-    <!--<param name="image" value="pg_$(arg device)/image_raw"/>-->
+  <node name="cameracalibrator" pkg="camera_calibration" type="cameracalibrator.py" output="screen" args="--size 9x8 --square 0.1 image:=pg_$(arg device)/image">
   </node>
 
 </launch>

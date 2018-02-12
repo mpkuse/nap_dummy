@@ -9,11 +9,11 @@ Panels:
         - /Ref1/Grid1
         - /Paths1/Path1
         - /Paths1/No Loop1
+        - /Image1
         - /MarkerArray1
         - /MarkerArray2
         - /MarkerArray3
         - /MarkerArray3/Namespaces1
-        - /DBOW Colocation1/Status1
       Splitter Ratio: 0.622093022
     Tree Height: 823
   - Class: rviz/Selection
@@ -34,7 +34,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: PointCloud
+    SyncSource: Image
 Visualization Manager:
   Class: ""
   Displays:
@@ -167,7 +167,7 @@ Visualization Manager:
       Name: Paths
     - Class: rviz/Image
       Enabled: true
-      Image Topic: /camera/image_raw
+      Image Topic: /feature_tracker/feature_img
       Max Value: 1
       Median window: 5
       Min Value: 0
@@ -179,7 +179,7 @@ Visualization Manager:
       Value: true
     - Class: rviz/MarkerArray
       Enabled: true
-      Marker Topic: /vins_estimator/pose_graph
+      Marker Topic: /pose_graph/camera_pose_visual
       Name: MarkerArray
       Namespaces:
         {}
@@ -260,6 +260,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
+    Default Light: true
     Fixed Frame: world
     Frame Rate: 30
   Name: root
@@ -281,7 +282,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 31.3918953
+      Distance: 87.0522003
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
@@ -293,6 +294,7 @@ Visualization Manager:
         Z: -0.000217220237
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
+      Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
       Pitch: -1.41979635

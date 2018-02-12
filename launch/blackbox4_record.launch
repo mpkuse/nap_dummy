@@ -1,6 +1,5 @@
 <launch>
 
-
 <!-- Start Camera (point grey camera) -->
     <arg name="device" default = "17302081"/>
     <arg name="rate" default="30"/>
@@ -55,37 +54,8 @@
 </node>
 
 
-<!-- Start VINS-testbed
-  Note: This involves 4 nodes
-  a) feature tracker   : Tracks features
-  b) vins_estimator    : IMU+Camera fusion + Marginalization
-  c) pose_graph        : Pose Graph Optimization engines. (This is run every 5 sec)
-  d) place_recognition : Place recognition. Can use either NAP or DBOW. (currently disabled)
--->
 
-<arg name="config_path" default="$(find feature_tracker)/../config/black_box4/blackbox4.yaml" />
-<arg name="vins_path" default="$(find feature_tracker)/../config/../" />
-
-<node name="feature_tracker" pkg="feature_tracker" type="feature_tracker" output="log">
-    <param name="config_file" type="string" value="$(arg config_path)" />
-    <param name="vins_folder" type="string" value="$(arg vins_path)" />
-</node>
-
-<node name="vins_estimator" pkg="vins_estimator" type="vins_estimator" output="screen">
-   <param name="config_file" type="string" value="$(arg config_path)" />
-   <param name="vins_folder" type="string" value="$(arg vins_path)" />
-</node>
-
-<node name="pose_graph" pkg="pose_graph" type="pose_graph" output="log">
-  <param name="config_file" type="string" value="$(arg config_path)" />
-  <param name="visualization_shift_x" type="int" value="0" />
-  <param name="visualization_shift_y" type="int" value="0" />
-  <param name="skip_cnt" type="int" value="0" />
-</node>
-
-
-
-<!-- Viz -->
-
+<!-- Bag Recording -->
+<node name="bag_record" pkg="rosbag" type="record" args="/pg_$(arg device)/image /djiros/imu " output="screen"/>
 
 </launch>

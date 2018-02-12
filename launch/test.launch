@@ -1,9 +1,24 @@
 <launch>
-
+<!-- Start IMU
+  Note: user need to be in dailout group. This is because the N3 is connected to
+  i7 as a ttyUSB device. /dev/ttyUSB0. You either need to set the permissions
+  so that the user can access it or best is to add user to group `dailout`.
+-->
+<node name="djiros" pkg="djiros" type="djiros_withtrigger_node" output="log" launch-prefix="">
+    <param name="trigger_freq" type="int" value="15"/>
+    <param name="log_level" type="string" value="info"/>
+    <param name="serial_name" type="string" value="/dev/ttyUSB0"/>
+    <param name="baud_rate" type="int" value="921600"/>
+    <param name="app_id" type="int" value="$(env DJIROS_APPID)"/>
+    <param name="enc_key" type="string" value="$(env DJIROS_ENCKEY)"/>
+    <param name="app_version" type="int" value="1"/>
+    <param name="sensor_mode" type="bool" value="false"/>
+    <param name="align_with_fmu" type="bool" value="true"/>
+</node>
 
 <!-- Start Camera (point grey camera) -->
     <arg name="device" default = "17302081"/>
-    <arg name="rate" default="30"/>
+    <arg name="rate" default="40"/>
 
     <node name="single_reader" pkg="ptgrey_reader" type="single_reader"
          ns="pg_$(arg device)" output="log">
@@ -37,22 +52,7 @@
 
 
 
-<!-- Start IMU
-  Note: user need to be in dailout group. This is because the N3 is connected to
-  i7 as a ttyUSB device. /dev/ttyUSB0. You either need to set the permissions
-  so that the user can access it or best is to add user to group `dailout`.
--->
-<node name="djiros" pkg="djiros" type="djiros_withtrigger_node" output="log" launch-prefix="">
-    <param name="trigger_freq" type="int" value="15"/>
-    <param name="log_level" type="string" value="info"/>
-    <param name="serial_name" type="string" value="/dev/ttyUSB0"/>
-    <param name="baud_rate" type="int" value="921600"/>
-    <param name="app_id" type="int" value="$(env DJIROS_APPID)"/>
-    <param name="enc_key" type="string" value="$(env DJIROS_ENCKEY)"/>
-    <param name="app_version" type="int" value="1"/>
-    <param name="sensor_mode" type="bool" value="false"/>
-    <param name="align_with_fmu" type="bool" value="true"/>
-</node>
+
 
 
 <!-- Start VINS-testbed

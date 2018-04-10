@@ -1,0 +1,78 @@
+<launch>
+
+<machine name="tx2" address="192.168.3.5" user="nvidia" password="" env-loader="/home/nvidia/roslaunch_env.sh"/>
+<!-- <machine name="i7" address="192.168.3.3" user="i7-2" password="1" env-loader="/home/i72/roslaunch_env.sh"/> -->
+
+
+<!-- Play Bag -->
+<arg name="bag_path" default="/home/i7-2/.ros/" />
+<!-- <arg name="bag_file" default="2018-02-19-17-52-36.bag" doc="single loop in lab"/> -->
+<arg name="bag_file" default="2018-03-20-10-40-43.bag" doc="multiple loops in lab"/>
+<node  pkg="rosbag" type="play" name="rosbag" args="-d 15  -s 10 $(arg bag_path)/$(arg bag_file)" output="log"/>
+
+
+
+
+<!-- Start VINS-testbed
+  Note: This involves 4 nodes. Remember to confirm yaml config file
+  a) feature tracker   : Tracks features
+  b) vins_estimator    : IMU+Camera fusion + Marginalization
+  c) pose_graph        : Pose Graph Optimization engines. (This is run every 5 sec)
+  d) place_recognition : Place recognition. Can use either NAP or DBOW. (currently disabled)
+-->
+
+<arg name="config_path" default="$(find feature_tracker)/../config/black_box4/blackbox4.yaml" />
+<arg name="vins_path" default="$(find feature_tracker)/../config/../" />
+
+<node name="feature_tracker" pkg="feature_tracker" type="feature_tracker" output="log">
+    <param name="config_file" type="string" value="$(arg config_path)" />
+    <param name="vins_folder" type="string" value="$(arg vins_path)" />
+</node>
+
+<node name="vins_estimator" pkg="vins_estimator" type="vins_estimator" output="log">
+   <param name="config_file" type="string" value="$(arg config_path)" />
+   <param name="vins_folder" type="string" value="$(arg vins_path)" />
+</node>
+
+<node name="pose_graph" pkg="pose_graph" type="pose_graph" output="log">
+  <param name="config_file" type="string" value="$(arg config_path)" />
+  <param name="visualization_shift_x" type="int" value="0" />
+  <param name="visualization_shift_y" type="int" value="0" />
+  <param name="skip_cnt" type="int" value="0" />
+</node>
+
+
+
+
+
+
+<!-- RVIZ -->
+<!--<node name="rvizvisualisation" pkg="rviz" type="rviz" output="log" args="-d $(find nap)/rviz/nuc_viz.rviz" />-->
+
+
+
+<!-- Place Recognition -->
+<arg name="bag_color_im_topic" default="/vins_estimator/keyframe_image" />
+<arg name="config_path_tx2" default="/home/nvidia/catkin_ws/src/nap/slam_data/blackbox4.yaml" />
+
+<!-- <node machine="tx2" name="dbow_node" pkg="nap" type="dbow3_naive" output="screen">
+   <remap to="$(arg bag_color_im_topic)" from="/color_image_inp" />
+   <remap from="/colocation_dbow" to="/colocation" />
+ </node> -->
+
+ <!-- <node machine="tx2" name="nap" pkg="nap" type="nap_robustdaisy_bf.py" output="screen" > -->
+ <node machine="tx2" name="nap" pkg="nap" type="nap_multiproc.py" output="screen" >
+   <remap to="$(arg bag_color_im_topic)" from="/semi_keyframes"/>
+   <param name="config_file" type="string" value="$(arg config_path_tx2)" />
+ </node>
+
+<!-- Geometry Node / Custom Pose Graph Optimization #####
+             subscribes to `vins/camera_pose`, `3d_point_cloud`, `napMsg`  -->
+     <!-- Note: from config file only the camera intrunsics are read. Need to be consistent with the ones supplied to VINS -->
+ <node machine="tx2" name="pgraph_opt" pkg="nap" type="pose_graph_opt_node" output="log">
+   <param name="config_file" type="string" value="$(arg config_path_tx2)" />
+       <!-- Commentout next line to remove the places-feedback-->
+       <!-- <remap from="/colocation_chatter" to="/colocation" /> -->
+ </node>
+
+</launch>

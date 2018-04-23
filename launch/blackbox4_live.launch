@@ -92,10 +92,6 @@
 
 
 
-<!-- RVIZ -->
-<node name="rvizvisualisation" pkg="rviz" type="rviz" output="log" args="-d $(find nap)/rviz/nuc_viz.rviz" />
-
-
 
 <!-- Place Recognition -->
 <arg name="bag_color_im_topic" default="/vins_estimator/keyframe_image" />
@@ -121,4 +117,50 @@
        <!-- <remap from="/colocation_chatter" to="/colocation" /> -->
  </node>
 
+
+
+
+
+ <!-- RVIZ -->
+ <node name="rvizvisualisation" pkg="rviz" type="rviz" output="log" args="-d $(find nap)/rviz/nuc_viz.rviz" />
+
+ <!-- AR_demo -->
+ <!-- use this if you wish to use the VIO path instead of standard pose_graph optimized path -->
+ <!-- <remap from="~camera_path" to="/vins_estimator/camera_path"/> -->
+
+ <!-- if you run this node on i7 use:
+ <param name="calib_file" type="string" value="$(arg config_path)"/> -->
+
+ <!-- if you run this node on tx2 use:
+ <param name="calib_file" type="string" value="$(arg config_path_tx2)"/>
+ also dont forget to se machine="tx2" in <node>
+-->
+
+ <!-- <node  machine="tx2" pkg="ar_demo" type="ar_demo_node" name="ar_demo_node" output="log">
+     <remap from="~image_raw" to="/pg_17302081/image" doc="input image"/>
+
+     <remap from="~camera_path" to="/pose_graph/pose_graph_camera_path"/>
+
+     <param name="calib_file" type="string" value="$(arg config_path_tx2)"/>
+     <param name="box_length" type="double" value="0.8"/>
+     <param name="in_x" type="double" value="-7."/>
+     <param name="in_y" type="double" value="0."/>
+     <param name="in_z" type="double" value="-1.2"/>
+
+     <param name="use_undistored_img" type="bool" value="false"/>
+ </node> -->
+
+
+ <node pkg="ar_demo" type="ar_demo_node" name="ar_demo_node" output="log">
+     <remap from="~image_raw" to="/pg_17302081/image" doc="input image"/>
+     <remap from="~camera_path" to="/pose_graph/pose_graph_camera_path"/>
+
+     <param name="calib_file" type="string" value="$(arg config_path)"/>
+     <param name="box_length" type="double" value="0.8"/>
+     <param name="in_x" type="double" value="-7."/>
+     <param name="in_y" type="double" value="0."/>
+     <param name="in_z" type="double" value="-1.2"/>
+
+     <param name="use_undistored_img" type="bool" value="false"/>
+ </node>
 </launch>
